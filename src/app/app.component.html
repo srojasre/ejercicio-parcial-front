@@ -1,0 +1,21 @@
+<div class="container">
+  <h1 class="mt-5">{{ title }}</h1>
+  <form (ngSubmit)="onSubmit()" class="mt-4">
+    <div class="form-group">
+      <label for="prompt">Enter Prompt</label>
+      <input type="text" class="form-control" id="prompt" [(ngModel)]="prompt" name="prompt" required>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Generate Pokemon</button>
+  </form>
+
+  <h2 class="mt-5">Pokemon List</h2>
+  <ul class="list-group">
+    <li class="list-group-item" *ngFor="let pokemon of pokemonList" (click)="selectedPokemon = pokemon">
+      {{ pokemon.title }} - {{ pokemon.category }}
+    </li>
+  </ul>
+
+  <p class="mt-3">Most Common Category: {{ mostCommonCategory }}</p>
+
+  <app-pokemon-detail *ngIf="selectedPokemon" [pokemon]="selectedPokemon"></app-pokemon-detail>
+</div>
