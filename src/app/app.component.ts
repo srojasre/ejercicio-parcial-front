@@ -1,5 +1,9 @@
 import { Component } from '@angular/core';
 import { PokemonService } from './services/pokemon.service';
+import {FormsModule} from "@angular/forms";
+import {CommonModule} from "@angular/common";
+import {PokemonDetailComponent} from "./pokemon-detail/pokemon-detail.component";
+
 
 interface Pokemon {
   title: string;
@@ -11,6 +15,14 @@ interface Pokemon {
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
+  imports: [
+    CommonModule,
+    FormsModule,
+    PokemonDetailComponent,
+
+  ],
+
+  standalone: true
 })
 export class AppComponent {
   title = 'Pokemon Card Generator';
@@ -18,35 +30,28 @@ export class AppComponent {
   pokemonList: Pokemon[] = [];
   mostCommonCategory = '';
   selectedPokemon?: Pokemon;
-  
+
   constructor(private pokemonService: PokemonService) {}
 
   onSubmit() {
     this.pokemonService.getPokemon(this.prompt).subscribe(response => {
       const newPokemon: Pokemon = {
-        title: this.extractTitle(response.response),
-        description: this.extractDescription(response.response),
-        category: this.extractCategory(response.response)
+        title: this.extractFieldFromResponse(response, 'title'),
+        description: this.extractFieldFromResponse(response, 'description'),
+        category: this.extractFieldFromResponse(response, 'category'),
       };
       this.pokemonList.push(newPokemon);
       this.updateMostCommonCategory();
+      console.log(response);
     });
   }
 
-  extractTitle(response: string): string {
-    const titleMatch = response.match(/Title:\s*(.*)/);
-    return titleMatch ? titleMatch[1].trim() : '';
-  }
-
-  extractDescription(response: string): string {
-    const descriptionMatch = response.match(/Description:\s*(.*)/);
-    return descriptionMatch ? descriptionMatch[1].trim() : '';
-  }
-
-  extractCategory(response: string): string {
-    const categoryMatch = response.match(/Category:\s*(.*)/);
-    return categoryMatch ? categoryMatch[1].trim() : '';
-  }
+  /*
+  * Actualiza las categorias más comunes
+  * Si no existen pokemones la categorias es vacia
+  * Si Solo existe un pokemon esa sera la categoria más comun
+  * Si dos categorias tienen la misma cantidad primara la que estaba antes
+  * */
 
   updateMostCommonCategory() {
     const categoryCount: { [key: string]: number } = {};
@@ -55,4 +60,23 @@ export class AppComponent {
     });
     this.mostCommonCategory = Object.keys(categoryCount).reduce((a, b) => categoryCount[a] > categoryCount[b] ? a : b);
   }
+
+  /*
+  * Extrae el response del back para evitar problemas busca diferentes formatos
+  * */
+  extractFieldFromResponse(response: any, field: string): string {
+    try {
+      // Extraer la cadena JSON de la propiedad `response`
+      const jsonString = typeof response.response === 'string' ? response.response : '';
+      // Parsear la cadena JSON
+      const parsedResponse = JSON.parse(jsonString);
+      // Devolver el campo solicitado
+      return parsedResponse[field] || '';
+    } catch (error) {
+      console.error('Error parsing response:', error);
+      return '';
+    }
+  }
+
+
 }

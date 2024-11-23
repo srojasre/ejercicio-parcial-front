@@ -1,7 +1,8 @@
-<div class="card mt-4">
+<!-- Caracteristicas de un pokemon cuando se da click en la lista -->
+<div class="card mt-4" *ngIf="pokemon">
     <div class="card-body">
-      <h3 class="card-title">{{ pokemon.title }}</h3>
-      <p class="card-text">{{ pokemon.description }}</p>
-      <p class="card-text"><strong>Category:</strong> {{ pokemon.category }}</p>
+        <h3 class="card-title">{{ pokemon.title }}</h3>
+        <p class="card-text">{{ pokemon.description }}</p>
+        <p class="card-text"><strong>Category:</strong> {{ pokemon.category }}</p>
     </div>
-  </div>
+</div>
