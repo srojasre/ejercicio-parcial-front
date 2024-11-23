@@ -23,3 +23,5 @@ export class PokemonService {
 
   }
 }
+
+//@author Sebastián Rojas
